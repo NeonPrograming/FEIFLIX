@@ -8,24 +8,24 @@ interface NavigationProps {
 }
 
 const pageLabels: Record<string, string> = {
-    home: 'Home',
+    movies: 'Filmes',
+    search: 'Pesquisar',
     fav: 'Favoritos',
     about: 'Sobre',
-    movie: 'Filmes',
 };
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 const getIconName = (route: string, focused: boolean): IoniconsName => {
   switch (route) {
-    case 'home':
-      return focused ? 'home' : 'home-outline';
+    case 'movies':
+      return focused ? 'film' : 'film-outline';
     case 'fav':
       return focused ? 'heart' : 'heart-outline';
     case 'about':
       return focused ? 'information-circle' : 'information-circle-outline';
-    case 'movie':
-      return focused ? 'film' : 'film-outline';
+    case 'search':
+      return focused ? 'search' : 'search-outline';
     default:
       return 'help-circle';
   }
