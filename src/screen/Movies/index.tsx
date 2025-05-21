@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { Movie, getMovies, MovieResponse } from '../../services/api';
 import MovieCard from '../../components/MovieCard';
@@ -44,7 +44,7 @@ const Movies: React.FC<MoviesProps> = ({ navigation, onSelectMovie }) => {
     fetchMovies();
   }, []);
 
-  const handleSelectMovie = (movie: Movie) => {
+  const handleSelectMovie = useCallback((movie: Movie) => {
     // Use a função onSelectMovie do App.tsx se disponível
     if (onSelectMovie) {
       onSelectMovie(movie.id);
@@ -53,7 +53,7 @@ const Movies: React.FC<MoviesProps> = ({ navigation, onSelectMovie }) => {
     else if (navigation?.navigate) {
       navigation.navigate('MovieDetail', { movieId: movie.id });
     }
-  };
+  }, [onSelectMovie, navigation]);
 
   const handleLoadMore = () => {
     if (page < totalPages && !loading) {
@@ -80,7 +80,9 @@ const Movies: React.FC<MoviesProps> = ({ navigation, onSelectMovie }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Filmes em Cartaz</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.heading}>Filmes em Cartaz</Text>
+      </View>
       
       {loading && page === 1 ? (
         <View style={styles.loaderContainer}>
@@ -91,7 +93,10 @@ const Movies: React.FC<MoviesProps> = ({ navigation, onSelectMovie }) => {
           data={movies}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <MovieCard movie={item} onPress={handleSelectMovie} />
+            <MovieCard 
+              movie={item} 
+              onPress={handleSelectMovie}
+            />
           )}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
@@ -117,11 +122,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  headerContainer: {
+    backgroundColor: '#db0000',
+    paddingVertical: 12,
+    marginBottom: 10,
+    width: '100%',
+  },
   heading: {
     fontSize: 22,
     fontWeight: 'bold',
-    padding: 16,
-    color: '#ba0c0c',
+    paddingHorizontal: 16,
+    color: '#fff',
   },
   loaderContainer: {
     flex: 1,
@@ -133,6 +144,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
+    paddingHorizontal: 16,
     paddingBottom: 80, // Espaço para a navigation bar
   },
 });

@@ -11,6 +11,8 @@ import {
   Pressable
 } from 'react-native';
 import { Movie, getMovieDetails, getMovieCredits, Cast, Crew, Credits, Genre } from '../../services/api';
+import { toggleFavorite, isFavorite } from '../../services/favorites';
+import { playFavoriteSound } from '../../utils/SoundUtils';
 
 interface MovieDetailProps {
   navigation?: any;
@@ -29,6 +31,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ navigation, route, movieId: p
   const [credits, setCredits] = useState<Credits | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   // Usar o movieId da prop ou do route param
   const movieId = propMovieId || route?.params?.movieId;
@@ -56,6 +59,10 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ navigation, route, movieId: p
             setCredits(creditsData);
           }
           
+          // Verificar se o filme está nos favoritos
+          const favStatus = await isFavorite(movieId);
+          setIsFavorited(favStatus);
+          
           setError(null);
         } else {
           setError('Não foi possível carregar os detalhes do filme');
@@ -70,6 +77,21 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ navigation, route, movieId: p
 
     fetchMovieData();
   }, [movieId]);
+
+  // Função para alternar o status de favorito
+  const handleToggleFavorite = async () => {
+    if (movieId) {
+      const newFavStatus = await toggleFavorite(movieId);
+      setIsFavorited(newFavStatus);
+      
+      // Se o filme foi adicionado aos favoritos (não removido), toca o som
+      if (newFavStatus) {
+        playFavoriteSound().catch(err => 
+          console.warn('Erro ao tocar som:', err)
+        );
+      }
+    }
+  };
 
   // Formatando a data de lançamento para o formato brasileiro
   const formatDate = (dateString?: string): string => {
@@ -231,13 +253,25 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ navigation, route, movieId: p
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.backButton} 
-        onPress={handleBack}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.backButtonText}>← Voltar</Text>
-      </TouchableOpacity>
+      <View style={styles.headerButtons}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.backButtonText}>← Voltar</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.favoriteButton}
+          onPress={handleToggleFavorite}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.favoriteButtonText, isFavorited && styles.favoriteButtonTextActive]}>
+            {isFavorited ? '★ Favorito' : '☆ Favoritar'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Imagem de fundo (backdrop) */}
@@ -615,14 +649,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
+  headerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    zIndex: 1,
+  },
   backButton: {
     padding: 12,
-    zIndex: 1,
   },
   backButtonText: {
     fontSize: 16,
     color: '#ba0c0c',
     fontWeight: 'bold',
+  },
+  favoriteButton: {
+    padding: 12,
+  },
+  favoriteButtonText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: 'bold',
+  },
+  favoriteButtonTextActive: {
+    color: '#f5a623',
   },
   crewList: {
     paddingTop: 8,

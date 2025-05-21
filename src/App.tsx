@@ -13,8 +13,7 @@ type PageKey = 'movies' | 'fav' | 'about' | 'search' | 'movieDetail';
 // Interface para as propriedades de navegação
 interface NavigationProps {
   movieId?: number; // ID do filme para a tela de detalhes
-  returnToSearch?: boolean; // Indica se deve voltar para a tela de busca
-  restoreSearch?: boolean; // Indica se deve restaurar o estado da busca
+  previousScreen?: PageKey; // Tela anterior para voltar após detalhes
 }
 
 export default function App() {
@@ -37,23 +36,23 @@ export default function App() {
 
   // Função para navegar entre telas
   const navigateTo = useCallback((screen: PageKey, props: NavigationProps = {}) => {
-    // Guardar a tela anterior antes de mudar
-    setPrevScreen(currentScreen);
+
+    // Se estamos navegando para detalhes de filme, armazene a tela atual como tela anterior
+    if (screen === 'movieDetail') {
+      props.previousScreen = currentScreen;
+    }
+
     setCurrentScreen(screen);
     setNavProps(props);
   }, [currentScreen]);
 
-  // Handler específico para voltar da tela de detalhes
+  // Handler para voltar da tela de detalhes para a tela anterior
   const handleBackFromDetails = useCallback(() => {
-    if (navProps.returnToSearch) {
-      // Se veio da busca, volta para a tela de busca com indicação para restaurar
-      setCurrentScreen('search');
-      setNavProps({ restoreSearch: true });
-    } else {
-      // Caso contrário, volta para a tela de filmes
-      setCurrentScreen('movies');
-    }
-  }, [navProps.returnToSearch]);
+    // Voltar para a tela anterior ou para 'movies' como fallback
+    const previousScreen = navProps.previousScreen || 'movies';
+    setCurrentScreen(previousScreen);
+  }, [navProps.previousScreen]);
+
 
   return (
     <>
