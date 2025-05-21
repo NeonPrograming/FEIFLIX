@@ -192,7 +192,11 @@ export const getMovieDetails = async (movieId: number): Promise<Movie | null> =>
 export const searchMovies = async (query: string, page = 1): Promise<MovieResponse> => {
   try {
     const response = await api.get<MovieResponse>('search/movie', {
-      params: { query, page }
+      params: { 
+        query, 
+        page,
+        include_adult: false, 
+      }
     });
     
     // Processar traduções se necessário

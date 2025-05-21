@@ -17,6 +17,7 @@ interface MovieDetailProps {
   route?: {
     params: {
       movieId: number;
+      returnToSearch?: boolean; // Indica se deve voltar para a tela de busca
     };
   };
   movieId?: number; // ID do filme pode ser passado diretamente
@@ -182,7 +183,16 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ navigation, route, movieId: p
     if (onBack) {
       onBack();
     } else if (navigation?.goBack) {
-      navigation.goBack();
+      // Verificar se veio da tela de busca
+      const cameFromSearch = route?.params?.returnToSearch === true;
+      
+      if (cameFromSearch && navigation.navigate) {
+        // Navegar de volta para a tela Search com parâmetro para restaurar a busca
+        navigation.navigate('Search', { restoreSearch: true });
+      } else {
+        // Comportamento padrão de voltar
+        navigation.goBack();
+      }
     }
   };
 
