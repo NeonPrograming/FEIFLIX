@@ -14,6 +14,7 @@ type PageKey = 'movies' | 'fav' | 'about' | 'search' | 'movieDetail';
 interface NavigationProps {
   movieId?: number; // ID do filme para a tela de detalhes
   previousScreen?: PageKey; // Tela anterior para voltar após detalhes
+  returnToSearch?: boolean; // Indica se deve voltar para a tela de busca
 }
 
 export default function App() {
