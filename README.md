@@ -1,50 +1,134 @@
-# Welcome to your Expo app 👋
+# FEIFLIX
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Um aplicativo de streaming de filmes desenvolvido com React Native e Expo, utilizando a API do TMDB (The Movie Database) para fornecer informações atualizadas sobre filmes em cartaz.
 
-## Get started
+## Visão Geral
 
-1. Install dependencies
+FEIFLIX é um aplicativo móvel que permite aos usuários explorar filmes em cartaz, buscar por títulos específicos, visualizar detalhes completos sobre cada filme (incluindo elenco e equipe técnica) e salvar seus filmes favoritos para acesso rápido. O aplicativo foi desenvolvido como parte de um projeto acadêmico da FEI para a disciplina de Computação Móvel.
 
-   ```bash
-   npm install
-   ```
+## Funcionalidades
 
-2. Start the app
+### 1. Navegação entre Telas
+- Tela inicial (Filmes em Cartaz)
+- Tela de Favoritos
+- Tela de Busca
+- Tela de Detalhes do Filme
+- Tela Sobre
 
-   ```bash
-   npx expo start
-   ```
+### 2. Exibição de Filmes em Cartaz
+- Listagem dos filmes atualmente em cartaz
+- Layout responsivo com cards de filmes
+- Carregamento paginado para melhor performance
+- Pull-to-refresh para atualizar a lista
 
-In the output, you'll find options to open the app in a
+### 3. Detalhes do Filme
+- Imagem de fundo (backdrop) e poster
+- Informações básicas:
+  - Título 
+  - Avaliação (nota)
+  - Data de lançamento (formatada para pt-BR)
+  - Duração (formatada para horas e minutos)
+- Gêneros exibidos como tags coloridas
+- Sinopse completa
+- Elenco principal com fotos e nomes dos personagens
+- Diretores com fotos em formato circular
+- Roteiristas com cargos traduzidos para português
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 4. Sistema de Favoritos
+- Adicionar/remover filmes dos favoritos
+- Feedback sonoro ao favoritar (som de "plim")
+- Indicação visual (estrela amarela) nos cards de filmes favoritados
+- Tela dedicada para visualizar todos os filmes favoritos
+- Persistência dos favoritos entre sessões usando AsyncStorage
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 5. Busca de Filmes
+- Campo de pesquisa para buscar filmes por título
+- Exibição de resultados usando o mesmo componente de card
+- Estados para carregamento, erro e resultados vazios
+- Persistência do termo de busca usando AsyncStorage
 
-## Get a fresh project
+## Tecnologias Utilizadas
 
-When you're ready, run:
+### API TMDB
+- Integração com a API do The Movie Database (TMDB)
+- Endpoints utilizados:
+  - `/movie/now_playing`: Filmes em cartaz
+  - `/movie/{id}`: Detalhes de um filme específico
+  - `/movie/{id}/credits`: Elenco e equipe técnica
+  - `/search/movie`: Busca de filmes por título
+- Tratamento para garantir conteúdo traduzido em português quando disponível
+- Fallback para inglês quando descrições não estão disponíveis em português
 
-```bash
-npm run reset-project
+### AsyncStorage
+- Implementação do AsyncStorage para persistência de dados
+- Armazenamento de IDs de filmes favoritos:
+  ```typescript
+  // Chave para armazenamento
+  const FAVORITES_STORAGE_KEY = '@FEIFLIX:favorites';
+  
+  // Salvar favoritos
+  await AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteIds));
+  
+  // Recuperar favoritos
+  const favoritesString = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+  ```
+- Persistência do último termo de busca:
+  ```typescript
+  // Chave para armazenamento
+  const SEARCH_HISTORY_KEY = '@FEIFLIX:search_history';
+  
+  // Salvar termo de busca
+  await AsyncStorage.setItem(SEARCH_HISTORY_KEY, searchQuery);
+  
+  // Recuperar termo de busca
+  const lastQuery = await AsyncStorage.getItem(SEARCH_HISTORY_KEY);
+  ```
+
+### Expo
+- Utilização do framework Expo para desenvolvimento React Native
+- Biblioteca expo-av para reprodução de áudio (som ao favoritar)
+
+## Estrutura do Projeto
+
+```
+src/
+├── assets/            # Imagens e sons
+├── components/        # Componentes reutilizáveis (ex: MovieCard)
+├── screen/            # Telas do aplicativo
+│   ├── About/         # Tela sobre o projeto
+│   ├── Fav/           # Tela de favoritos
+│   ├── MovieDetail/   # Tela de detalhes do filme
+│   ├── Movies/        # Tela principal (filmes em cartaz)
+│   └── Search/        # Tela de busca
+├── services/          # Serviços de API e lógica de negócios
+│   ├── api.ts         # Integração com a API TMDB
+│   └── favorites.ts   # Gerenciamento de favoritos
+└── utils/             # Utilitários (ex: sons)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Desafios e Soluções
 
-## Learn more
+### 1. Tradução de Conteúdo
+- Implementação de verificação para descrições vazias em português
+- Fallback para conteúdo em inglês quando necessário
 
-To learn more about developing your project with Expo, look at the following resources:
+### 2. Navegação Entre Telas
+- Sistema de navegação personalizado que lembra a tela anterior
+- Retorno para a tela correta após visualizar detalhes de um filme
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 3. Gerenciamento de Estado
+- Uso de useState e useEffect para gerenciar estados locais
+- AsyncStorage para persistência entre sessões
 
-## Join the community
+## Como Executar
 
-Join our community of developers creating universal apps.
+1. Clone o repositório
+2. Instale as dependências com `npm install`
+3. Execute com `npm start` ou `expo start`
+4. Escaneie o QR code com o aplicativo Expo Go no seu dispositivo
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Créditos
+
+Desenvolvido por Felipe Brum Pereira como parte do projeto acadêmico da FEI para a disciplina de Computação Móvel.
+
+API de dados fornecida por [The Movie Database (TMDB)](https://www.themoviedb.org/).
