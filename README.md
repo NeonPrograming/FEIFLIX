@@ -127,6 +127,13 @@ src/
 3. Execute com `npm start` ou `expo start`
 4. Escaneie o QR code com o aplicativo Expo Go no seu dispositivo
 
+## Imagens
+![image](https://github.com/user-attachments/assets/c4d7dfb0-61ed-4d27-b1f6-4c0ecda516c7)
+![image](https://github.com/user-attachments/assets/b11b84d9-6a43-465a-b95e-fe33d7f38be4)
+![image](https://github.com/user-attachments/assets/d7886d83-3bd3-41e9-80eb-2a5e20cea789)
+
+
+
 ## Créditos
 
 Desenvolvido por Felipe Brum Pereira como parte do projeto acadêmico da FEI para a disciplina de Computação Móvel.
